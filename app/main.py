@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app import models  # noqa: F401 - ensure models are registered with Base.metadata
 from app.config import settings
 from app.database import engine, Base
@@ -33,8 +35,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Enable CORS for local frontend development interface communication
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Include task router
 app.include_router(tasks.router)
+
+# Mount static frontend web application at /app
+app.mount("/app", StaticFiles(directory="static", html=True), name="static")
 
 
 @app.get("/", tags=["Health"], summary="Health check endpoint")
@@ -46,4 +60,5 @@ def read_root():
         "status": "online",
         "message": f"Welcome to {settings.PROJECT_NAME}",
         "docs_url": "/docs",
+        "frontend_url": "/app",
     }
