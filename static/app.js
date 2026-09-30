@@ -5,10 +5,10 @@
 
 // Base API URL configuration
 const API_BASE_URL =
-  window.location.origin.startsWith('http') &&
-  !window.location.origin.startsWith('file:')
+  window.location.port === '8000'
     ? window.location.origin
     : 'http://127.0.0.1:8000';
+
 
 let currentFilter = 'all';
 
